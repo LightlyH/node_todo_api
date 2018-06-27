@@ -30,5 +30,5 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
     console.log('Unable to fetch Lily', err);
   });
 
-  db.close();
+  // db.close();
 });
