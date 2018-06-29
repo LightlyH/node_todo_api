@@ -39,7 +39,7 @@ UserSchema.methods.toJSON = function() {
   return _.pick(userObject, ['_id', 'email']);
 };
 
-UserSchema.methods.generateAuthToken = function() {
+UserSchema.methods.generateAuthToken = function() { // .methods means what comes after it is an instance method
   var user = this;
   var access = 'auth';
   var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
@@ -52,6 +52,26 @@ UserSchema.methods.generateAuthToken = function() {
 
   });*/
 
+};
+
+UserSchema.statics.findByToken = function(token) { // .statics means what comes after it is a model method
+  var User = this;
+  var decoded;  // undefined
+
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // });
+    return Promise.reject(); // more succinct
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,     // 'tokens.token': fetch nested document value
+    'tokens.access': 'auth'
+  });
 };
 
 var User = mongoose.model('User', UserSchema);
